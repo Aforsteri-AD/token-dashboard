@@ -26,4 +26,18 @@ The first `python3 cli.py scan` on a heavy user's machine can read tens of MB ac
 
 ## Running two dashboards against the same DB
 
-Both will fight over the SQLite file and you'll see inconsistent numbers and occasional `database is locked` errors. Only run one at a time. If you want to view the dashboard from a second device, use `HOST=0.0.0.0` on the one running machine and point the second device's browser at it.
+Both will fight over the SQLite write lock and you'll see `database is locked` errors. Only run one at a time. If you want to view the dashboard from a second device, use `HOST=0.0.0.0` on the one running machine and point the second device's browser at it.
+
+**Orphaned processes on Windows.** Closing a terminal window does not always send `SIGTERM` to the Python child process. If you close the window instead of pressing `Ctrl+C`, a `python.exe` running `cli.py dashboard` can survive and hold the SQLite write lock indefinitely. The next `python3 cli.py dashboard` run will then fail immediately with `database is locked`.
+
+Fix: before starting the dashboard, confirm no old instance is running:
+
+```powershell
+Get-Process python* | ForEach-Object {
+    $wmi = Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)"
+    "$($_.Id): $($wmi.CommandLine)"
+}
+Stop-Process -Id <PID> -Force   # if any show cli.py dashboard
+```
+
+The scanner now commits after each JSONL file rather than at the end of the full scan, so killing an in-progress scan is safe — previously committed files are durable and the next run resumes from where it left off.

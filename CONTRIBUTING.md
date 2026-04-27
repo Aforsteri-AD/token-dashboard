@@ -18,7 +18,7 @@ If you're fixing a bug, add a failing test first. If you're adding a feature, ad
 python3 cli.py dashboard --no-open
 ```
 
-Open http://127.0.0.1:8080 in your browser. The server re-scans every 30 seconds and pushes updates over Server-Sent Events, so you'll see changes without a hard refresh.
+Open http://127.0.0.1:9000 in your browser. The server re-scans every 30 seconds and pushes updates over Server-Sent Events, so you'll see changes without a hard refresh.
 
 ## Code style
 

@@ -82,7 +82,8 @@ def default_db_path() -> Path:
 def init_db(path: Union[str, Path]) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(path) as c:
+    with sqlite3.connect(path, timeout=60) as c:
+        c.execute("PRAGMA journal_mode=WAL")
         _migrate_add_message_id(c)
         c.executescript(SCHEMA)
 
@@ -112,8 +113,9 @@ def _migrate_add_message_id(conn) -> None:
 
 @contextmanager
 def connect(path: Union[str, Path]):
-    conn = sqlite3.connect(path)
+    conn = sqlite3.connect(path, timeout=60)
     conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys = ON")
     try:
         yield conn

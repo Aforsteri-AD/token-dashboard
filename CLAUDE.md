@@ -32,7 +32,7 @@ Claude Code writes one JSONL file per session to `~/.claude/projects/<project-sl
 
 ## Customizing
 
-Env vars: `PORT` (default 8080), `HOST` (default 127.0.0.1), `CLAUDE_PROJECTS_DIR`, `TOKEN_DASHBOARD_DB`. Pricing lives in `pricing.json`. See README.md § Environment variables for details.
+Env vars: `PORT` (default 9000), `HOST` (default 127.0.0.1), `CLAUDE_PROJECTS_DIR`, `TOKEN_DASHBOARD_DB`. Pricing lives in `pricing.json`. See README.md § Environment variables for details.
 
 ## Known limitations
 
@@ -43,5 +43,5 @@ See `docs/KNOWN_LIMITATIONS.md`. Current summary: Skills `tokens_per_call` is po
 ```bash
 python3 -m unittest discover tests        # all tests
 python3 cli.py dashboard --no-open        # start the server
-curl http://127.0.0.1:8080/api/overview   # sanity-check an endpoint
+curl http://127.0.0.1:9000/api/overview   # sanity-check an endpoint
 ```

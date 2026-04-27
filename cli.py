@@ -78,7 +78,7 @@ def cmd_dashboard(args):
     from token_dashboard.server import run
 
     host = os.environ.get("HOST", "127.0.0.1")
-    port = int(os.environ.get("PORT", "8080"))
+    port = int(os.environ.get("PORT", "9000"))
     url = f"http://{host}:{port}/"
     if not args.no_open:
         webbrowser.open(url)

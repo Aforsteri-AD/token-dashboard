@@ -36,7 +36,7 @@ python3 cli.py dashboard
 
 The command:
 1. Scans `~/.claude/projects/` (first run can take 20–60 seconds on a heavy user's machine).
-2. Starts a local server at http://127.0.0.1:8080.
+2. Starts a local server at http://127.0.0.1:9000.
 3. Opens your default browser to that URL.
 
 Leave it running; it re-scans every 30 seconds and pushes updates live. Stop with `Ctrl+C`.
@@ -62,7 +62,7 @@ python3 cli.py dashboard --projects-dir /path/to/projects --db /path/to/cache.db
 
 | Var | Default | Purpose |
 |---|---|---|
-| `PORT` | `8080` | Port the local web server listens on |
+| `PORT` | `9000` | Port the local web server listens on |
 | `HOST` | `127.0.0.1` | Bind address. Keep the default. Setting `0.0.0.0` exposes your entire prompt history to anyone on your local network — don't do this on any network you don't fully control (no coffee-shop Wi-Fi, no coworking spaces). |
 | `CLAUDE_PROJECTS_DIR` | `~/.claude/projects` | Where to scan for session JSONL files |
 | `TOKEN_DASHBOARD_DB` | `~/.claude/token-dashboard.db` | SQLite cache location |
@@ -76,7 +76,7 @@ python3 cli.py scan          # populate / refresh the local DB, then exit
 python3 cli.py today         # today's totals (terminal)
 python3 cli.py stats         # all-time totals (terminal)
 python3 cli.py tips          # active suggestions (terminal)
-python3 cli.py dashboard     # scan + serve the UI at http://localhost:8080
+python3 cli.py dashboard     # scan + serve the UI at http://localhost:9000
 
 # dashboard flags
 python3 cli.py dashboard --no-open   # don't auto-open the browser
@@ -103,11 +103,33 @@ The Overview tab also has a built-in "What do these numbers mean?" panel that ex
 
 **"No data" or empty charts.** Run `python3 cli.py scan` once to populate the DB, then reload.
 
-**Port 8080 already in use.** `PORT=9000 python3 cli.py dashboard`.
+**Port 9000 already in use.** `PORT=9001 python3 cli.py dashboard`.
 
 **Numbers look wrong / stuck.** The DB lives at `~/.claude/token-dashboard.db`. Delete it and re-run `python3 cli.py scan` to rebuild from scratch.
 
-**Running the dashboard twice at the same time.** Don't — both processes will fight over the SQLite DB. Stop all instances before starting a new one.
+**`database is locked` error on startup.** A previous dashboard process is still running. Find and kill it before starting a new one:
+
+```powershell
+# Windows — find the process
+Get-Process python* | ForEach-Object {
+    $wmi = Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)"
+    "$($_.Id): $($wmi.CommandLine)"
+}
+# Kill whichever line shows cli.py dashboard
+Stop-Process -Id <PID> -Force
+```
+
+```bash
+# macOS / Linux
+ps aux | grep "cli.py dashboard"
+kill <PID>
+```
+
+After killing the old process, run `python3 cli.py dashboard` again — SQLite recovers any leftover lock files automatically on the next connection.
+
+> **Windows tip:** closing the terminal window does *not* always kill the Python process. Always stop the server with `Ctrl+C` before closing, or confirm the process is gone via Task Manager / `Get-Process python*`.
+
+**Running the dashboard twice at the same time.** Don't — both processes will compete for the SQLite write lock. Stop all instances before starting a new one.
 
 ## Accuracy note
 

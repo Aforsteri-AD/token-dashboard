@@ -5,6 +5,12 @@ __pycache__/
 out/
 node_modules/
 *.db
+*.db-journal
+*.db-shm
+*.db-wal
+dashboard*.log
+dashboard*.err
+dashboard-err.txt
 .superpowers/
 .claude/
 docs/superpowers/

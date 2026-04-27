@@ -270,8 +270,8 @@ def scan_dir(projects_root: Union[str, Path], db_path: Union[str, Path]) -> dict
                 "INSERT OR REPLACE INTO files (path, mtime, bytes_read, scanned_at) VALUES (?, ?, ?, ?)",
                 (str(p), stat.st_mtime, sub["end_offset"], time.time()),
             )
+            conn.commit()
             totals["messages"] += sub["messages"]
             totals["tools"]    += sub["tools"]
             totals["files"]    += 1
-        conn.commit()
     return totals
