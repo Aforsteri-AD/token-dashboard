@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS dismissed_tips (
 
 
 def default_db_path() -> Path:
-    return Path.home() / ".claude" / "token-dashboard.db"
+    return Path.home() / ".claude" / "token-dashboard" / "token-dashboard.db"
 
 
 def init_db(path: Union[str, Path]) -> None:
